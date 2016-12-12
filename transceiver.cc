@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <omnetpp.h>
+#include "power_update_m.h"
 using namespace omnetpp;
 
 class transceiver : public cSimpleModule
@@ -29,12 +30,12 @@ void transceiver::initialize(){
 void transceiver::handleMessage(cMessage *msg)
 {
     cGate *arrivalGate = msg->getArrivalGate();
-    if (arrivalGate==NULL){ //dann war das eine self-message und wir sind der Messpunkt
+    if (arrivalGate==NULL){ //first self-message --> Node is Sender
         send (new cMessage(),"transmission$o");
         power_level("send");
         scheduleAt(simTime()+normal(1800,60),measuring_interval);
     }else{
-
+        //code
     }
 }
 
@@ -48,7 +49,7 @@ void transceiver::power_level(std::string activity)
         }else if(activity=="receive"){
             power_consumption=24300;
             bubble("Receiving");
-        }else{      //if state("sleeping")
+        }else{      //if state("sleeping"/"idle")
             power_consumption=200;
             bubble("sleeping/idle");
         }
@@ -61,7 +62,7 @@ void transceiver::power_level(std::string activity)
         }else if(activity=="receive"){
             power_consumption=60000;
             bubble("Receiving");
-        }else{      //if state("sleeping")
+        }else{      //if state("sleeping"/"idle")
             power_consumption=10;
             bubble("sleeping/idle");
         }
@@ -74,7 +75,7 @@ void transceiver::power_level(std::string activity)
           }else if(activity=="receive"){
               power_consumption=6100;
               bubble("Receiving");
-          }else{      //if state("sleeping")
+          }else{      //if state("sleeping"/"idle")
               power_consumption=1;
               bubble("sleeping/idle");
           }
@@ -87,11 +88,13 @@ void transceiver::power_level(std::string activity)
            }else if(activity=="receive"){
                power_consumption=12000;
                bubble("Receiving");
-           }else{      //if state("sleeping")
+           }else{      //if state("sleeping"/"idle")
                power_consumption=4;
                bubble("sleeping/idle");
            }
     }
-
-    EV<< "Power Level:" << power_consumption;
+    power_update *pwrupd = new power_update();
+    pwrupd->setPower_consum(power_consumption);
+    send(pwrupd,"battery_connection$o");
 }
+

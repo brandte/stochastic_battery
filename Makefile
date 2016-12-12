@@ -29,10 +29,11 @@ PROJECTRELATIVE_PATH =
 O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 
 # Object files for local .cc, .msg and .sm files
-OBJS = $O/battery.o $O/transceiver.o
+OBJS = $O/battery.o $O/transceiver.o $O/power_update_m.o
 
 # Message files
-MSGFILES =
+MSGFILES = \
+    power_update.msg
 
 # SM files
 SMFILES =
@@ -125,6 +126,10 @@ depend:
 	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES) $(SM_CC_FILES)  ./*.cc
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-$O/battery.o: battery.cc
-$O/transceiver.o: transceiver.cc
+$O/battery.o: battery.cc \
+	power_update_m.h
+$O/power_update_m.o: power_update_m.cc \
+	power_update_m.h
+$O/transceiver.o: transceiver.cc \
+	power_update_m.h
 

@@ -3,12 +3,6 @@
 #include <omnetpp.h>
 using namespace omnetpp;
 
-//HALLO HALLO HALLO HALLO HALLO HALLO!!
-
-
-
-///HALLO!!!!
-
 class transceiver : public cSimpleModule
 {
   private:
@@ -36,9 +30,9 @@ void transceiver::handleMessage(cMessage *msg)
     if (arrivalGate==NULL){ //dann war das eine self-message und wir sind der Messpunkt
         send (new cMessage(),"gate$o");
         scheduleAt(simTime()+normal(1800,60),measuring_interval);
-    }else{      //dann sind wir der Empfï¿½nger und haben eine Nachricht von Auï¿½en bekommen
-        //hier haben wir jetzt eine Nachricht empfangen und mï¿½ssen unseren Pegel dementsprechend anpassen.
-        //spï¿½ter...
+    }else{      //dann sind wir der Empfänger und haben eine Nachricht von Außen bekommen
+        //hier haben wir jetzt eine Nachricht empfangen und müssen unseren Pegel dementsprechend anpassen.
+        //später...
         bubble("Hurray");
     }
 }

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <omnetpp.h>
+#include "power_update_m.h"
 using namespace omnetpp;
 
 class battery : public cSimpleModule{
@@ -17,5 +18,8 @@ void battery::initialize()
 
 void battery::handleMessage(cMessage *msg)
 {
-    // TODO - Generated method body
+    power_update *Power_pointer=check_and_cast<power_update *>(msg);
+    int g = Power_pointer->getPower_consum();
+    bubble("Battery hat was empfangen");
+    EV <<"Power Level in der Batterie " << g;
 }

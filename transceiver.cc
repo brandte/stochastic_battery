@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <omnetpp.h>
+#include "power_update_m.h"
 using namespace omnetpp;
 
 class transceiver : public cSimpleModule{
@@ -16,8 +17,8 @@ class transceiver : public cSimpleModule{
 Define_Module(transceiver);
 
 void transceiver::initialize(){
-    if (strcmp("Sender", getName()) == 0) {
-        send (new cMessage(),"gate$o");
+    if (strcmp("Sender", getParentModule()->getName()) == 0) {
+        send (new cMessage(),"transmission$o");
         power_level("send");
         measuring_interval = new cMessage("measuring interval");
         scheduleAt(normal(1800,60),measuring_interval);
@@ -28,7 +29,7 @@ void transceiver::handleMessage(cMessage *msg)
 {
     cGate *arrivalGate = msg->getArrivalGate();
     if (arrivalGate==NULL){ //dann war das eine self-message und wir sind der Messpunkt
-        send (new cMessage(),"gate$o");
+        send (new cMessage(),"transmission$o");
         power_level("send");
         scheduleAt(simTime()+normal(1800,60),measuring_interval);
     }else{      //dann sind wir der Empf‰nger und haben eine Nachricht von Auﬂen bekommen
@@ -45,7 +46,7 @@ void transceiver::power_level(std::string activity){
             power_consumption=33500;
         }else if(activity=="receive"){
             power_consumption=24300;
-        }else{      //Sleeping/idle
+        }else{      //Sleeping/idle; default case
             power_consumption=200;
         }
 
@@ -71,9 +72,11 @@ void transceiver::power_level(std::string activity){
             power_consumption=12000;
         }else if(activity=="receive"){
             power_consumption=12000;
-        }else{      //Sleeping/idle
+        }else{      // Sleeping/idle
             power_consumption=4;
         }
     }
-    //EV<<"Power level " << power_consumption;
+    power_update *pwr_upd=new power_update();
+    pwr_upd->setPower_consum(power_consumption);
+    send(pwr_upd,"battery_connection$o");
 }

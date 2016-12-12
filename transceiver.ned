@@ -2,6 +2,11 @@ package stochastic_battery;
 
 simple transceiver
 {
-        gates:
-        inout gate; 
+        parameters: //setting the parameters to a default value!
+           	int message_length = default(500);
+            int sending_interval = default(60);
+            string transceiver_type = default("CC2530");
+            
+      	gates:
+        	inout gate; 
 }

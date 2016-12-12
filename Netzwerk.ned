@@ -2,9 +2,9 @@ package stochastic_battery;
 
 network Netzwerk{		//Nice and simple
    submodules:
-        Sender: transceiver;
-        Receiver: transceiver;
+        Sender: Node;
+        Receiver: Node;
         
     connections:
-        Sender.gate <--> {  delay = 100ms; } <--> Receiver.gate;
+        Sender.port <--> {  delay = 100ms; } <--> Receiver.port;
 }  

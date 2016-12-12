@@ -34,6 +34,7 @@ void transceiver::handleMessage(cMessage *msg)
     }else{      //dann sind wir der Empfänger und haben eine Nachricht von Außen bekommen
         //hier haben wir jetzt eine Nachricht empfangen und müssen unseren Pegel dementsprechend anpassen.
         //später...
+        power_level("receive");
     }
 }
 
@@ -42,21 +43,37 @@ void transceiver::power_level(std::string activity){
     if (strcmp(par("transceiver_type"),("CC2530"))==0){
         if (activity=="send"){
             power_consumption=33500;
-            bubble("Sending");
-            EV << "power_consumtion:" << power_consumption;
         }else if(activity=="receive"){
             power_consumption=24300;
-            bubble("Receiving");
-        }else{      //Sleeping
+        }else{      //Sleeping/idle
             power_consumption=200;
-            bubble("sleeping/idle");
         }
 
     }else if (strcmp(par("transceiver_type"),("ESP8266"))==0){
-
+        if (activity=="send"){
+            power_consumption=215000;
+        }else if(activity=="receive"){
+            power_consumption=60000;
+        }else{      //Sleeping/idle
+            power_consumption=10;
+        }
     }else if(strcmp(par("transceiver_type"),("CC2650"))==0){
+        if (activity=="send"){
+            power_consumption=9100;
+        }else if(activity=="receive"){
+            power_consumption=6100;
+        }else{      //Sleeping/idle
+            power_consumption=1;
+        }
 
     }else if(strcmp(par("transceiver_type"),("RFD22301"))==0){
-
+        if (activity=="send"){
+            power_consumption=12000;
+        }else if(activity=="receive"){
+            power_consumption=12000;
+        }else{      //Sleeping/idle
+            power_consumption=4;
+        }
     }
+    //EV<<"Power level " << power_consumption;
 }

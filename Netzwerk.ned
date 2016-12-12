@@ -1,6 +1,6 @@
 package stochastic_battery;
 
-network Netzwerk{
+network Netzwerk{		//Nice and simple
    submodules:
         Sender: transceiver;
         Receiver: transceiver;

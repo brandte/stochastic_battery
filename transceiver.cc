@@ -18,8 +18,8 @@ class transceiver : public cSimpleModule
 Define_Module(transceiver);
 
 void transceiver::initialize(){
-    if (strcmp("Sender", getName()) == 0) {
-        send (new cMessage(),"gate$o");
+    if (strcmp("Sender", getParentModule()->getName()) == 0) {
+        send (new cMessage(),"transmission$o");
         power_level("send");
         measuring_interval = new cMessage("measuring interval");
         scheduleAt(normal(1800,60),measuring_interval);
@@ -30,7 +30,7 @@ void transceiver::handleMessage(cMessage *msg)
 {
     cGate *arrivalGate = msg->getArrivalGate();
     if (arrivalGate==NULL){ //dann war das eine self-message und wir sind der Messpunkt
-        send (new cMessage(),"gate$o");
+        send (new cMessage(),"transmission$o");
         power_level("send");
         scheduleAt(simTime()+normal(1800,60),measuring_interval);
     }else{

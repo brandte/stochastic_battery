@@ -8,5 +8,6 @@ simple transceiver
             string transceiver_type = default("CC2530");
             
       	gates:
-        	inout gate; 
+        	inout battery_connection;
+        	inout transmission;
 }

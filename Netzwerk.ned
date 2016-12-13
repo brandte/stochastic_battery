@@ -3,11 +3,13 @@ package stochastic_battery;
 network Netzwerk
 {
     submodules:
-        Sender: Node;
+        Sender: Node {
+            @display("p=205,30");
+        }
         Receiver: Node {
 
-            @display("p=91,30");
+            @display("p=39,30");
         }
     connections:
-        Sender.port <--> {  delay = 100ms; } <--> Receiver.port;
+        Sender.port <--> Receiver.port;
 }

@@ -6,5 +6,5 @@ network Netzwerk{		//Nice and simple
         Receiver: Node;
         
     connections:
-        Sender.port <--> {  delay = 100ms; } <--> Receiver.port;
+        Sender.port <--> Receiver.port;	// <--> {  delay = 1ms; }
 }  

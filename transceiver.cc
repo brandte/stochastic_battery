@@ -1,13 +1,20 @@
 #include <stdio.h>
 #include <string.h>
 #include <omnetpp.h>
-#include "power_update_m.h"
 using namespace omnetpp;
 
+#include "power_update_m.h"     //Sends the power level from transceiver to battery
+
+
 class transceiver : public cSimpleModule{
+  public:
+    //cMessage *data_load;                //Data that is send between sender and receiver.
+
   private:
     int power_consumption;      //The power level of the transceiver that will be transmitted to the battery. In Microampere
-    cMessage *measuring_interval;    //This one will be a self message, to set the measure and send interval.
+    cMessage *measuring_interval_SM;    //This one will be a self message, to set the measure and send interval.
+    cMessage *sending_time_SM;          //How long does the sending take? This SM will regulate.
+
   protected:
     virtual void initialize() override;
     virtual void handleMessage(cMessage *msg) override;
@@ -17,25 +24,37 @@ class transceiver : public cSimpleModule{
 Define_Module(transceiver);
 
 void transceiver::initialize(){
+    power_level("sleep");
     if (strcmp("Sender", getParentModule()->getName()) == 0) {
-        send (new cMessage(),"transmission$o");
+        cMessage *l_data_load = new cMessage("data_load");
+        send (l_data_load,"transmission$o");
         power_level("send");
-        measuring_interval = new cMessage("measuring interval");
-        scheduleAt(normal(1800,60),measuring_interval);
+        int sending_duration=3;
+        sending_time_SM = new cMessage("sending time SM");
+        scheduleAt(sending_duration,sending_time_SM);
+        measuring_interval_SM = new cMessage("measuring interval");
+        scheduleAt(normal(1800,60),measuring_interval_SM);
     }
 }
 
-void transceiver::handleMessage(cMessage *msg)
-{
-    cGate *arrivalGate = msg->getArrivalGate();
-    if (arrivalGate==NULL){ //dann war das eine self-message und wir sind der Messpunkt
-        send (new cMessage(),"transmission$o");
+void transceiver::handleMessage(cMessage *msg){
+    if (msg==measuring_interval_SM){ //dann war das eine self-message und wir sind der Messpunkt
+        cMessage *l_data_load = new cMessage("data_load");
+        send (l_data_load,"transmission$o");
         power_level("send");
-        scheduleAt(simTime()+normal(1800,60),measuring_interval);
-    }else{      //dann sind wir der Empf‰nger und haben eine Nachricht von Auﬂen bekommen
-        //hier haben wir jetzt eine Nachricht empfangen und m¸ssen unseren Pegel dementsprechend anpassen.
-        //sp‰ter...
+        int sending_duration=3;
+        scheduleAt(simTime()+sending_duration,sending_time_SM);
+        scheduleAt(simTime()+normal(1800,60),measuring_interval_SM);
+    }else if(msg==sending_time_SM){
+        power_level("sleep");
+    }else if(strcmp(msg->getName(),"data_load")==0){      //dann sind wir der Empf‰nger und haben eine Nachricht von Auﬂen bekommen
+        EV << getParentModule()->getName() << " hat eine Nachricht empfangen.";
         power_level("receive");
+        delete msg;
+    }else{
+        EV << "Irgendwas laeuft hier falsch: " << getParentModule()->getName() << "\n";
+        EV << msg->getName();
+        delete msg;
     }
 }
 

@@ -9,55 +9,102 @@ using namespace omnetpp;
 
 class transceiver : public cSimpleModule
 {
+    public:
+        cMessage *battery_exhausted;
+
     private:
         //float power_lvl;                      //The power level of the transceiver that will later be send to the battery.
         int power_consumption;                  //Power level of the Batter in micro-Ampere
         cMessage *measuring_interval_SM;        //This one is needed for the sender, to set the measure and send interval.
         cMessage *sending_time_SM;              // Sending time msg, refers to Data_laod and transmission speed.
-        //cMessage *data_load;                    //data from sender to receiver. Also describes as payload.
+                                                //data from sender to receiver. Also describes as payload.
+        double sending_duration;
+        cMessage *wake_up_SM;
+        bool dead;
 
     protected:
         virtual void initialize() override;
         virtual void handleMessage(cMessage *msg) override;
         virtual void power_level(std::string activity);
+        virtual double sending_duration_function();
 };
 
 Define_Module(transceiver);
 
 void transceiver::initialize(){
+    dead=0;
     power_level("sleep");
-    if (strcmp("Sender", getParentModule()->getName()) == 0) {
-        cMessage *l_data_load = new cMessage ("data_load");
-        send(l_data_load, "transmission$o");
-        sending_time_SM = new cMessage ("sending time");
-        measuring_interval_SM = new cMessage("measuring interval");
-        power_level("send");
-        int sending_duration = 3;                                       //Equation with frequency and transmitting speed.
-        scheduleAt(simTime()+sending_duration, sending_time_SM);
-        scheduleAt(simTime()+normal(1800,60),measuring_interval_SM);
+    sending_duration =sending_duration_function();                                       //Berechnung muss noch erfolgen!!!!!!!!!!!
+    int l_sending_interval = par("sending_interval");
+
+    if(l_sending_interval!=0){                                                           // I'm a Sender
+        if (strcmp("Sender", getParentModule()->getName())==0) {
+            //cMessage *l_data_load = new cMessage ("data_load");
+            //send(l_data_load, "transmission$o");
+            sending_time_SM = new cMessage ("sending time");
+            measuring_interval_SM = new cMessage("measuring interval");
+            //power_level("send");
+            //scheduleAt(simTime()+sending_duration, sending_time_SM);
+            scheduleAt(simTime()+l_sending_interval,measuring_interval_SM);
+        }else{                                                                          // I'm a Receiver
+            wake_up_SM = new cMessage ("wake_up_SM_Re");
+            scheduleAt(0.95*l_sending_interval,wake_up_SM);
+        }
     }
-}
+
+}                           // RECEIVER wird an dieser Stelle nicht initalisiert, weswegen die ersten Nachricht keinen Strom verbraucht
+                            // Unschärfe wird an dieser Stelle akzeptiert
 
 void transceiver::handleMessage(cMessage *msg)
 {
-    if (msg==measuring_interval_SM){                                    //first self-message --> Node is Sender
-        cMessage *l_data_load = new cMessage ("data_load");
-        send(l_data_load, "transmission$o");
-        power_level("send");
-        int sending_duration = 3;                                       //Berechnung muss noch erfolgen!!!!!!!!!!!
-        scheduleAt(simTime()+sending_duration, sending_time_SM);
-        scheduleAt(simTime()+normal(1800,60),measuring_interval_SM);
-    }else if (strcmp(msg->getName(),"data_load")==0){
-        power_level("receive");
-        delete msg;
-    }else if(msg==sending_time_SM){
-        power_level("sleep");
-    }else{
-        EV<< "ERROR+++ERROR+++ERROR+++ERROR+++ERROR+++ERROR+++ERROR+++ERROR+++";
-        EV<< msg->getName();
-        delete msg;
+    if(dead==0){
+
+        if (msg==measuring_interval_SM){                                    //first self-message --> Node is Sender
+            cMessage *l_data_load = new cMessage ("data_load");
+            send(l_data_load, "transmission$o");
+            power_level("send");
+            scheduleAt(simTime()+sending_duration, sending_time_SM);
+            scheduleAt(simTime()+par("sending_interval"),measuring_interval_SM);
+        }else if (strcmp(msg->getName(),"data_load")==0){
+            power_level("sleep");
+            double l_sending_interval = par("sending_interval");
+            scheduleAt(simTime()+0.95*l_sending_interval, wake_up_SM);
+            delete msg;
+        }else if(msg==sending_time_SM){
+            power_level("sleep");
+        }else if(msg==wake_up_SM){
+            power_level("receive");                                         //assumption of a perfect channel and no information lost
+        }else if(msg==battery_exhausted){
+            dead=1;
+            delete msg;
+            EV<< "Battery from" << getParentModule()->getName() << "is empty";
+        }else{
+            EV<< "ERROR+++ERROR+++ERROR+++ERROR+++ERROR+++ERROR+++ERROR+++ERROR";
+            EV<< msg->getName();
+            delete msg;
+        }
+
     }
 }
+
+double transceiver::sending_duration_function()
+{
+    double l_sending_duration=0;
+    int l_message_length = par("message_length");
+    l_message_length=64*ceil(l_message_length/64);               //extended message length -> modulo 64
+
+    if (strcmp(par("transceiver_type"),("CC2530"))==0){             //assuming BPSK
+        l_sending_duration=(l_message_length/250000);
+    }else if(strcmp(par("transceiver_type"),("ESP8266"))==0){
+        l_sending_duration=(l_message_length/54000000);
+    }else if(strcmp(par("transceiver_type"),("CC2650"))==0){
+        l_sending_duration=(l_message_length/1000000);
+    }else/*(strcmp(par("transceiver_type"),("RFD22301"))==0)*/{
+        l_sending_duration=(l_message_length/250000);
+    }
+    return l_sending_duration;
+}
+
 
 void transceiver::power_level(std::string activity)
 {

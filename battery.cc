@@ -5,8 +5,11 @@
 using namespace omnetpp;
 
 class battery : public cSimpleModule{
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
+public:
+        cMessage *imdead;
+    protected:
+        virtual void initialize();
+        virtual void handleMessage(cMessage *msg);
 };
 
 Define_Module(battery);

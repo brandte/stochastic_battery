@@ -166,6 +166,7 @@ Register_Class(power_update);
 power_update::power_update(const char *name, int kind) : ::omnetpp::cMessage(name,kind)
 {
     this->power_consum = 0;
+    this->condition = 0;
 }
 
 power_update::power_update(const power_update& other) : ::omnetpp::cMessage(other)
@@ -188,18 +189,21 @@ power_update& power_update::operator=(const power_update& other)
 void power_update::copy(const power_update& other)
 {
     this->power_consum = other.power_consum;
+    this->condition = other.condition;
 }
 
 void power_update::parsimPack(omnetpp::cCommBuffer *b) const
 {
     ::omnetpp::cMessage::parsimPack(b);
     doParsimPacking(b,this->power_consum);
+    doParsimPacking(b,this->condition);
 }
 
 void power_update::parsimUnpack(omnetpp::cCommBuffer *b)
 {
     ::omnetpp::cMessage::parsimUnpack(b);
     doParsimUnpacking(b,this->power_consum);
+    doParsimUnpacking(b,this->condition);
 }
 
 int power_update::getPower_consum() const
@@ -210,6 +214,16 @@ int power_update::getPower_consum() const
 void power_update::setPower_consum(int power_consum)
 {
     this->power_consum = power_consum;
+}
+
+char power_update::getCondition() const
+{
+    return this->condition;
+}
+
+void power_update::setCondition(char condition)
+{
+    this->condition = condition;
 }
 
 class power_updateDescriptor : public omnetpp::cClassDescriptor
@@ -276,7 +290,7 @@ const char *power_updateDescriptor::getProperty(const char *propertyname) const
 int power_updateDescriptor::getFieldCount() const
 {
     omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
-    return basedesc ? 1+basedesc->getFieldCount() : 1;
+    return basedesc ? 2+basedesc->getFieldCount() : 2;
 }
 
 unsigned int power_updateDescriptor::getFieldTypeFlags(int field) const
@@ -289,8 +303,9 @@ unsigned int power_updateDescriptor::getFieldTypeFlags(int field) const
     }
     static unsigned int fieldTypeFlags[] = {
         FD_ISEDITABLE,
+        FD_ISEDITABLE,
     };
-    return (field>=0 && field<1) ? fieldTypeFlags[field] : 0;
+    return (field>=0 && field<2) ? fieldTypeFlags[field] : 0;
 }
 
 const char *power_updateDescriptor::getFieldName(int field) const
@@ -303,8 +318,9 @@ const char *power_updateDescriptor::getFieldName(int field) const
     }
     static const char *fieldNames[] = {
         "power_consum",
+        "condition",
     };
-    return (field>=0 && field<1) ? fieldNames[field] : nullptr;
+    return (field>=0 && field<2) ? fieldNames[field] : nullptr;
 }
 
 int power_updateDescriptor::findField(const char *fieldName) const
@@ -312,6 +328,7 @@ int power_updateDescriptor::findField(const char *fieldName) const
     omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
     int base = basedesc ? basedesc->getFieldCount() : 0;
     if (fieldName[0]=='p' && strcmp(fieldName, "power_consum")==0) return base+0;
+    if (fieldName[0]=='c' && strcmp(fieldName, "condition")==0) return base+1;
     return basedesc ? basedesc->findField(fieldName) : -1;
 }
 
@@ -325,8 +342,9 @@ const char *power_updateDescriptor::getFieldTypeString(int field) const
     }
     static const char *fieldTypeStrings[] = {
         "int",
+        "char",
     };
-    return (field>=0 && field<1) ? fieldTypeStrings[field] : nullptr;
+    return (field>=0 && field<2) ? fieldTypeStrings[field] : nullptr;
 }
 
 const char **power_updateDescriptor::getFieldPropertyNames(int field) const
@@ -380,6 +398,7 @@ std::string power_updateDescriptor::getFieldValueAsString(void *object, int fiel
     power_update *pp = (power_update *)object; (void)pp;
     switch (field) {
         case 0: return long2string(pp->getPower_consum());
+        case 1: return long2string(pp->getCondition());
         default: return "";
     }
 }
@@ -395,6 +414,7 @@ bool power_updateDescriptor::setFieldValueAsString(void *object, int field, int 
     power_update *pp = (power_update *)object; (void)pp;
     switch (field) {
         case 0: pp->setPower_consum(string2long(value)); return true;
+        case 1: pp->setCondition(string2long(value)); return true;
         default: return false;
     }
 }

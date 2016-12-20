@@ -112,55 +112,62 @@ void transceiver::power_level(std::string activity)
         if (activity=="send"){
             power_consumption=33500;
             bubble("Sending");
-
         }else if(activity=="receive"){
             power_consumption=24300;
             bubble("Receiving");
-        }else{            //if state("sleeping"/"idle")
+        }else{            //if state("sleeping")
             power_consumption=200;
-            bubble("sleeping/idle");
+            bubble("sleeping");
         }
 
     }else if (strcmp(par("transceiver_type"),("ESP8266"))==0){
         if (activity=="send"){
             power_consumption=215000;
             bubble("Sending");
-
         }else if(activity=="receive"){
             power_consumption=60000;
             bubble("Receiving");
-        }else{      //if state("sleeping"/"idle")
+        }else{      //if state("sleeping")
             power_consumption=10;
-            bubble("sleeping/idle");
+            bubble("sleeping");
         }
 
     }else if(strcmp(par("transceiver_type"),("CC2650"))==0){
         if (activity=="send"){
                   power_consumption=9100;
               bubble("Sending");
-
         }else if(activity=="receive"){
               power_consumption=6100;
               bubble("Receiving");
-        }else{      //if state("sleeping"/"idle")
+        }else{      //if state("sleeping")
               power_consumption=1;
-              bubble("sleeping/idle");
+              bubble("sleeping");
         }
 
     }else if(strcmp(par("transceiver_type"),("RFD22301"))==0){
         if (activity=="send"){
                power_consumption=12000;
                bubble("Sending");
-
         }else if(activity=="receive"){
                power_consumption=12000;
                bubble("Receiving");
-        }else{      //if state("sleeping"/"idle")
+        }else{      //if state("sleeping")
                power_consumption=4;
-               bubble("sleeping/idle");
+               bubble("sleeping");
         }
     }
+
+    char short_activity='e';            //using this for implementing variable in power_update.msg
+    if (activity=="send"){              // e == ERROR
+        short_activity='s';
+    } else if(activity=="receive"){
+        short_activity='r';
+    }else if (activity=="sleep"){
+        short_activity='z';             // i==leep
+    }
+
     power_update *pwrupd = new power_update();
+    pwrupd->setCondition(short_activity);
     pwrupd->setPower_consum(power_consumption);
     send(pwrupd,"battery_connection$o");
 }

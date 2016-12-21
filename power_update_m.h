@@ -21,6 +21,7 @@
  * message power_update
  * {
  *     int power_consum;
+ *     char current_activity;
  * }
  * </pre>
  */
@@ -28,6 +29,7 @@ class power_update : public ::omnetpp::cMessage
 {
   protected:
     int power_consum;
+    char current_activity;
 
   private:
     void copy(const power_update& other);
@@ -48,6 +50,8 @@ class power_update : public ::omnetpp::cMessage
     // field getter/setter methods
     virtual int getPower_consum() const;
     virtual void setPower_consum(int power_consum);
+    virtual char getCurrent_activity() const;
+    virtual void setCurrent_activity(char current_activity);
 };
 
 inline void doParsimPacking(omnetpp::cCommBuffer *b, const power_update& obj) {obj.parsimPack(b);}

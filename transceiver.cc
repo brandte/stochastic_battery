@@ -99,7 +99,7 @@ void transceiver::power_level(std::string activity){
             power_consumption=33500;
         }else if(activity=="receive"){
             power_consumption=24300;
-        }else{      //Sleeping/idle; default case
+        }else{      //Sleeping; default case
             power_consumption=200;
         }
 
@@ -108,7 +108,7 @@ void transceiver::power_level(std::string activity){
             power_consumption=215000;
         }else if(activity=="receive"){
             power_consumption=60000;
-        }else{      //Sleeping/idle
+        }else{      //Sleeping
             power_consumption=10;
         }
     }else if(strcmp(par("transceiver_type"),("CC2650"))==0){
@@ -116,7 +116,7 @@ void transceiver::power_level(std::string activity){
             power_consumption=9100;
         }else if(activity=="receive"){
             power_consumption=6100;
-        }else{      //Sleeping/idle
+        }else{      //Sleeping
             power_consumption=1;
         }
 
@@ -125,11 +125,17 @@ void transceiver::power_level(std::string activity){
             power_consumption=12000;
         }else if(activity=="receive"){
             power_consumption=12000;
-        }else{      // Sleeping/idle
+        }else{      // Sleeping
             power_consumption=4;
         }
     }
+    char short_activity='e';  //e for error; We need a char, because strings are not allowed.
+    if (activity=="send"){short_activity='s';}
+    else if(activity=="receive"){short_activity='r';}
+    else if(activity=="sleep"){short_activity='z';}   //z for sleep.
+
     power_update *pwr_upd=new power_update();
     pwr_upd->setPower_consum(power_consumption);
+    pwr_upd->setCurrent_activity(short_activity);
     send(pwr_upd,"battery_connection$o");
 }

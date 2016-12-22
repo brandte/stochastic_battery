@@ -46,7 +46,7 @@ void battery::handleMessage(cMessage *msg){
     if(dead==0){
         //Berechnen des Verbrauches in der vorangegangenen Periode.
         simtime_t delta_t=(simTime()-time);
-        int64_t usage=round(delta_t.dbl()*power_level/conversion);
+        int64_t usage=round(power_level/conversion*delta_t.dbl());
         int_capacity-=usage;
         float_capacity=int_capacity*conversion;
         stat_capacity.record(float_capacity);
@@ -60,7 +60,7 @@ void battery::handleMessage(cMessage *msg){
             //Recovery
             if(last_activity!='z'){
                 float q_0=0.95;
-                float g_n=1e-10;
+                float g_n=2e-10;
                 float g_c=1e-5;
                 float p=0;      //initialisation
                 int64_t int_old_capacity =int_capacity;

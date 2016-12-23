@@ -56,7 +56,7 @@ void transceiver::handleMessage(cMessage *msg){
         }else if(msg==sending_time_SM){
             power_level("sleep");
         }else if(strcmp(msg->getName(),"data_load")==0){      //dann sind wir der Empf‰nger und haben eine Nachricht von Auﬂen bekommen
-            EV << getParentModule()->getName() << " hat eine Nachricht empfangen.";
+            //EV << getParentModule()->getName() << " hat eine Nachricht empfangen.";
             power_level("sleep");
             double l_sending_interval=par("sending_interval");
             scheduleAt(simTime()+0.95*l_sending_interval,wakeup_SM);

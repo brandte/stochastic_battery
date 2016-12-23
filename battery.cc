@@ -46,7 +46,9 @@ void battery::handleMessage(cMessage *msg){
     if(dead==0){
         //Berechnen des Verbrauches in der vorangegangenen Periode.
         simtime_t delta_t=(simTime()-time);
+        EV << getParentModule()->getName() << ": simtime_t delta_t: " << delta_t << "\n";
         int64_t usage=round(power_level/conversion*delta_t.dbl());
+        EV << getParentModule()->getName() << ": int64_t usage: " << usage;
         int_capacity-=usage;
         float_capacity=int_capacity*conversion;
         stat_capacity.record(float_capacity);

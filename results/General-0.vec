@@ -1,14 +1,14 @@
 version 2
-run General-0-20161223-21:05:35-6348
+run General-0-20161223-21:46:12-6856
 attr configname General
-attr datetime 20161223-21:05:35
+attr datetime 20161223-21:46:12
 attr experiment General
 attr inifile omnetpp.ini
 attr iterationvars ""
 attr iterationvars2 $repetition=0
 attr measurement ""
 attr network Netzwerk
-attr processid 6348
+attr processid 6856
 attr repetition 0
 attr replication #0
 attr resultdir results
@@ -23,55 +23,22 @@ vector 3  Netzwerk.Receiver.battery  "Battery capacity"  ETV
 vector 1  Netzwerk.Sender.battery  "Power Level"  ETV
 vector 4  Netzwerk.Receiver.battery  "Power Level"  ETV
 vector 5  Netzwerk.Receiver.battery  "How much is recovered"  ETV
-vector 2  Netzwerk.Sender.battery  "How much is recovered"  ETV
 0	0	0	108
 0	1	0	108
 0	7	30	107.9939999952
-0	10	30	107.9939999952
-0	10	30	107.9939999952
-0	15	60	107.9879999904
-0	18	60	107.9879999904
-0	18	60	107.9879999904
-0	23	90	107.9819999856
 1	1	0	0
 1	1	0	0.0002
 1	7	30	0.0002
 1	7	30	0.0335
-1	10	30	0.0335
-1	10	30	0.0002
-1	15	60	0.0002
-1	15	60	0.0335
-1	18	60	0.0335
-1	18	60	0.0002
-1	23	90	0.0002
-1	23	90	0.0335
-2	10	30	0
-2	18	60	0
 3	0	0	108
 3	2	0	108
 3	4	28.5	107.9942999976
 3	9	30	107.9578499976
 3	9	30	107.9583272172
-3	12	58.5	107.9526272148
-3	17	60	107.9161772148
-3	17	60	107.9166486456
-3	20	88.5	107.9109486432
-3	25	90	107.8744986432
-3	25	90	107.8749716184
 4	2	0	0
 4	2	0	0.0002
 4	4	28.5	0.0002
 4	4	28.5	0.0243
 4	9	30	0.0243
 4	9	30	0.0002
-4	12	58.5	0.0002
-4	12	58.5	0.0243
-4	17	60	0.0243
-4	17	60	0.0002
-4	20	88.5	0.0002
-4	20	88.5	0.0243
-4	25	90	0.0243
-4	25	90	0.0002
 5	9	30	44187
-5	17	60	43651
-5	25	90	43794

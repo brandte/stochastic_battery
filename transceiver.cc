@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <omnetpp.h>
+#include <cmath>
 using namespace omnetpp;
 
 #include "power_update_m.h"     //Sends the power level from transceiver to battery
@@ -31,6 +32,8 @@ void transceiver::initialize(){
     dead=0;
     power_level("sleep");
     int l_sending_interval=par("sending_interval");
+    sending_duration=sending_duration_func();
+
 
     if (l_sending_interval!=0){
         if (strcmp("Sender", getParentModule()->getName()) == 0){
@@ -77,8 +80,9 @@ void transceiver::handleMessage(cMessage *msg){
 
 double transceiver::sending_duration_func(){
     double l_sending_duration;
-    int l_message_length=par("message_length");
+    double l_message_length=par("message_length");
     l_message_length=ceil(l_message_length/64)*64;
+    EV << "l message length: " << l_message_length << "\n";
 
     if (strcmp(par("transceiver_type"),("CC2530"))==0){
         l_sending_duration=l_message_length/250000;             //Assuming BPSK
@@ -89,6 +93,7 @@ double transceiver::sending_duration_func(){
     }else{                                                      //(strcmp(par("transceiver_type"),("RFD22301"))==0){
         l_sending_duration=l_message_length/250000;
     }
+    EV << "l_sending_duration: " << l_sending_duration << "\n";
     return l_sending_duration;
 }
 
@@ -129,7 +134,7 @@ void transceiver::power_level(std::string activity){
             power_consumption=4;
         }
     }
-    char short_activity='e';  //e for error; We need a char, because strings are not allowed.
+    char short_activity='e';  //e for error; We need a char, because strings are not allowed in messages.
     if (activity=="send"){short_activity='s';}
     else if(activity=="receive"){short_activity='r';}
     else if(activity=="sleep"){short_activity='z';}   //z for sleep.

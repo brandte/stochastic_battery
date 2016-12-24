@@ -5,6 +5,9 @@
 #include "power_update_m.h"
 using namespace omnetpp;
 
+//Register_GlobalConfigOption(CFGID_SIMTIME_SCALE, "simtime-scale", CFG_INT, "-12", "Sets the scale exponent, and thus the resolution of time for the 64-bit fixed-point simulation time representation. Accepted values are -18..0; for example, -6 selects microsecond resolution. -12 means picosecond resolution, with a maximum simtime of ~110 days.");
+
+
 class battery : public cSimpleModule{
     public:
         cMessage *imdead;
@@ -16,7 +19,7 @@ class battery : public cSimpleModule{
         long double float_capacity;  //Wir nutzen double, das hat ~10^15 Genauigkeit; Verhältnis von Gesamtladung zu kleinste Entladung etwa 10^11. Wir schon passen
         int64_t int_capacity;         //measured in kee kleinste Energie Einheiten SEU smalest Energy Units
         long double conversion;      //Conversion from SEU to As
-        simtime_t time;
+        simtime_t last_time;
         char last_activity;
         bool dead;
     protected:
@@ -28,6 +31,8 @@ Define_Module(battery);
 
 void battery::initialize()
 {
+    //EV <<"getScaleExp: " << omnetpp::SimTime::getScaleExp();  //Just for debug.
+
     stat_capacity.setName("Battery capacity");
     stat_power_level.setName("Power Level");
     stat_recovery.setName("How much is recovered");
@@ -39,14 +44,16 @@ void battery::initialize()
     conversion=float_capacity/1e10;                   //Normierung auf SEU.
     int_capacity=round(float_capacity/conversion);
     stat_capacity.record(float_capacity);
-    time=simTime();
+    last_time=simTime();
 }
 
 void battery::handleMessage(cMessage *msg){
     if(dead==0){
         //Berechnen des Verbrauches in der vorangegangenen Periode.
-        simtime_t delta_t=(simTime()-time);
+        simtime_t delta_t=(simTime()-last_time);
+        EV << getParentModule()->getName() << ": simtime_t delta_t: " << delta_t << "\n";
         int64_t usage=round(power_level/conversion*delta_t.dbl());
+        EV << getParentModule()->getName() << ": int64_t usage: " << usage;
         int_capacity-=usage;
         float_capacity=int_capacity*conversion;
         stat_capacity.record(float_capacity);
@@ -85,7 +92,7 @@ void battery::handleMessage(cMessage *msg){
             power_level=power_level/1000000;        //Jetzt auch in Ampere
             last_activity = Power_pointer->getCurrent_activity();
             stat_power_level.record(power_level);
-            time=simTime();
+            last_time=simTime();
         }
     }
 }

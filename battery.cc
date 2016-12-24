@@ -31,7 +31,7 @@ Define_Module(battery);
 
 void battery::initialize()
 {
-    EV <<"getScaleExp: " << omnetpp::SimTime::getScaleExp();
+    //EV <<"getScaleExp: " << omnetpp::SimTime::getScaleExp();  //Just for debug.
 
     stat_capacity.setName("Battery capacity");
     stat_power_level.setName("Power Level");

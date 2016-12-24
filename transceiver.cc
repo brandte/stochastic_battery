@@ -82,7 +82,6 @@ double transceiver::sending_duration_func(){
     double l_sending_duration;
     double l_message_length=par("message_length");
     l_message_length=ceil(l_message_length/64)*64;
-    EV << "l message length: " << l_message_length << "\n";
 
     if (strcmp(par("transceiver_type"),("CC2530"))==0){
         l_sending_duration=l_message_length/250000;             //Assuming BPSK
@@ -93,7 +92,7 @@ double transceiver::sending_duration_func(){
     }else{                                                      //(strcmp(par("transceiver_type"),("RFD22301"))==0){
         l_sending_duration=l_message_length/250000;
     }
-    EV << "l_sending_duration: " << l_sending_duration << "\n";
+
     return l_sending_duration;
 }
 

@@ -5,7 +5,6 @@
 #include "power_update_m.h"
 using namespace omnetpp;
 
-//Register_GlobalConfigOption(CFGID_SIMTIME_SCALE, "simtime-scale", CFG_INT, "-12", "Sets the scale exponent, and thus the resolution of time for the 64-bit fixed-point simulation time representation. Accepted values are -18..0; for example, -6 selects microsecond resolution. -12 means picosecond resolution, with a maximum simtime of ~110 days.");
 
 
 class battery : public cSimpleModule{
@@ -51,9 +50,9 @@ void battery::handleMessage(cMessage *msg){
     if(dead==0){
         //Berechnen des Verbrauches in der vorangegangenen Periode.
         simtime_t delta_t=(simTime()-last_time);
-        EV << getParentModule()->getName() << ": simtime_t delta_t: " << delta_t << "\n";
+        //EV << getParentModule()->getName() << ": simtime_t delta_t: " << delta_t << "\n";
         int64_t usage=round(power_level/conversion*delta_t.dbl());
-        EV << getParentModule()->getName() << ": int64_t usage: " << usage;
+        //EV << getParentModule()->getName() << ": int64_t usage: " << usage;
         int_capacity-=usage;
         float_capacity=int_capacity*conversion;
         stat_capacity.record(float_capacity);
@@ -62,13 +61,14 @@ void battery::handleMessage(cMessage *msg){
             dead=1;
             imdead=new cMessage("I am dead");
             send(imdead,"gate$o");
+            EV << getParentModule()->getName() << " is empty.";
         }else{
 
             //Recovery
             if(last_activity!='z'){
                 float q_0=0.95;
-                float g_n=2e-10;
-                float g_c=1e-5;
+                float g_n=3e-8;
+                float g_c=2e-8;
                 float p=0;      //initialisation
                 int64_t int_old_capacity =int_capacity;
 

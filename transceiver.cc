@@ -66,7 +66,7 @@ void transceiver::handleMessage(cMessage *msg){
             delete msg;
         }else if(msg==wakeup_SM){
             power_level("receive");         //Wir nehmen einen perfekten Kanal an. Keine Nachricht geht verloren, daher keine weiteren Fallunterscheidungen.
-        }else if(msg==imdead){              //Battery is empty.
+        }else if(msg==imdead||strcmp(msg->getName(),"I am dead")==0){  //Battery is empty.
             dead=1;
             EV << getParentModule()->getName() << "s battery is empty.";
             delete msg;

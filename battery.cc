@@ -62,14 +62,12 @@ void battery::handleMessage(cMessage *msg){
             imdead=new cMessage("I am dead");
             send(imdead,"gate$o");
             EV << getParentModule()->getName() << " is empty.";
-        }else{
-
-            //Recovery
+        }else{  //Recovery
             if(last_activity!='z'){
                 float q_0=0.95;
-                float g_n=3e-8;
-                float g_c=2e-8;
-                float p=0;      //initialisation
+                float g_n=3e-10;    //je kleiner, desdo "gerader"
+                float g_c=1e-12;     //
+                float p=0;      //Initialization
                 int64_t int_old_capacity =int_capacity;
 
                 for(long int i=1; i<=usage; i++){
@@ -82,8 +80,6 @@ void battery::handleMessage(cMessage *msg){
                 stat_capacity.record(float_capacity);
                 stat_recovery.record(int_capacity-int_old_capacity);
             }
-
-
 
             //Auslesen und Speicher der Eingangenen Werte.
             stat_power_level.record(power_level);

@@ -34,7 +34,6 @@ void transceiver::initialize(){
     int l_sending_interval=par("sending_interval");
     sending_duration=sending_duration_func();
 
-
     if (l_sending_interval!=0){
         if (strcmp("Sender", getParentModule()->getName()) == 0){
             sending_time_SM = new cMessage("sending time SM");
@@ -45,7 +44,6 @@ void transceiver::initialize(){
             scheduleAt(0.95*l_sending_interval,wakeup_SM);
         }
     }
-
 }
 
 void transceiver::handleMessage(cMessage *msg){

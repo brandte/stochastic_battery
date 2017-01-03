@@ -1,15 +1,15 @@
-file 1050725 1483441866                                         
+file 626 1483463010                                             
 version 2
-run General-0-20170103-11:28:49-7192
+run General-0-20170103-17:53:54-11988
 attr configname General
-attr datetime 20170103-11:28:49
+attr datetime 20170103-17:53:54
 attr experiment General
 attr inifile omnetpp.ini
 attr iterationvars ""
 attr iterationvars2 $repetition=0
 attr measurement ""
 attr network Netzwerk
-attr processid 7192
+attr processid 11988
 attr repetition 0
 attr replication #0
 attr resultdir results
@@ -21,13 +21,5 @@ param **.transceiver_type "\"CC2530\""
 
 vector 0  Netzwerk.Sender.battery  "Battery capacity"  ETV
 vector 3  Netzwerk.Receiver.battery  "Battery capacity"  ETV
-vector 1  Netzwerk.Sender.battery  "Power Level"  ETV
-vector 4  Netzwerk.Receiver.battery  "Power Level"  ETV
-vector 5  Netzwerk.Receiver.battery  "How much is recovered"  ETV
-vector 2  Netzwerk.Sender.battery  "How much is recovered"  ETV
-0	846 252112 0 20223 0 75840 7584 92.6596414116 108 760908.94216469 76491346.214355
-1	252958 250799 1 20223 0 75840 10112 0 0.0335 170.35370000003 5.6731759899997
-2	503757 58894 10 20218 30.002048 75810.002048 2527 0 0 0 0
-3	562651 217872 0 20224 0 75840 7586 1.7473007448 108 415544.21252906 29912417.979959
-4	780523 225575 2 20224 0 75840 10114 0 0.0243 123.8722 2.9857197200003
-5	1006098 44627 8 20224 30 75840 2528 0 34015 28043321 931592635933
+0	604 11 0 0 0 0 1 108 108 108 11664
+3	615 11 0 0 0 0 1 108 108 108 11664

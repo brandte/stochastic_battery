@@ -65,8 +65,8 @@ void battery::handleMessage(cMessage *msg){
         }else{  //Recovery
             if(last_activity!='z'){
                 float q_0=0.95;
-                float g_n=3e-10;    //je kleiner, desdo "gerader"
-                float g_c=1e-12;     //
+                float g_n=1e-10;    //je kleiner, desdo "gerader"
+                float g_c=1e-8;     //
                 float p=0;      //Initialization
                 int64_t int_old_capacity =int_capacity;
 

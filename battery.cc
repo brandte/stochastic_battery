@@ -60,9 +60,9 @@ if (dead==0){
     }else{
     //Recovery condition
     if(last_activity!='z'){     //Initialisierung
-        float q_0 = 0.95;
-        float g_n = 3e-10;
-        float g_c = 1e-4;
+        float q_0 = 0.1;
+        float g_n = 1e-10;
+        float g_c = 1e-8;
         float p=0;
         int64_t capacity_old = int_capacity;
         int64_t recovery;
@@ -80,6 +80,8 @@ if (dead==0){
     }
    }
     // Auslesen des Memory der eingegangenen Werte
+
+
     stat_power_level.record(power_level);
     power_update *Power_pointer=check_and_cast<power_update *>(msg);          //Auslesen des Power_upates (in MikroAmpere)
     power_level = Power_pointer->getPower_consum();

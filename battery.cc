@@ -65,14 +65,14 @@ void battery::handleMessage(cMessage *msg){
         }else{  //Recovery
             if(last_activity!='z'){
                 float q_0=0.95;
-                float g_n=1e-10;    //je kleiner, desdo "gerader"
-                float g_c=1e-8;     //
+                float g_n=1e-10;    //Overall decay coefficient
+                float g_c=1e-8;     //How much usage can maximal be recovered.
                 float p=0;      //Initialization
                 int64_t int_old_capacity =int_capacity;
 
                 for(long int i=1; i<=usage; i++){
                     p=q_0*exp(-int_capacity*g_n-i*g_c);
-                    if(0.01*intuniform(0,100)<p){
+                    if(0.001*intuniform(0,1000)<p){
                         int_capacity++;
                     }
                 }

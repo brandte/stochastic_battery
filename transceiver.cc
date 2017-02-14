@@ -17,7 +17,8 @@ class transceiver : public cSimpleModule{
     cMessage *sending_time_SM;          //How long does the sending take? This SM will regulate.
     cMessage *wakeup_SM;                //The SM that will wake up the receiver.
     double sending_duration;
-
+    double receiver_offtime=par("receiver_offtime");
+    int transceiver_datarate=par("transceiver_datarate");
 
   protected:
     virtual void initialize() override;
@@ -41,7 +42,7 @@ void transceiver::initialize(){
             scheduleAt(par("sending_interval"),measuring_interval_SM);
         }else{  //ich bin der Receiver
             wakeup_SM=new cMessage("wake up SM for Receiver");
-            scheduleAt(0.95*l_sending_interval,wakeup_SM);
+            scheduleAt(receiver_offtime*l_sending_interval,wakeup_SM);
         }
     }
 }
@@ -60,7 +61,7 @@ void transceiver::handleMessage(cMessage *msg){
             //EV << getParentModule()->getName() << " hat eine Nachricht empfangen.";
             power_level("sleep");
             double l_sending_interval=par("sending_interval");
-            scheduleAt(simTime()+0.95*l_sending_interval,wakeup_SM);
+            scheduleAt(simTime()+receiver_offtime*l_sending_interval,wakeup_SM);
             delete msg;
         }else if(msg==wakeup_SM){
             power_level("receive");         //Wir nehmen einen perfekten Kanal an. Keine Nachricht geht verloren, daher keine weiteren Fallunterscheidungen.
@@ -87,8 +88,10 @@ double transceiver::sending_duration_func(){
         l_sending_duration=l_message_length/54000000;
     }else if(strcmp(par("transceiver_type"),("CC2650"))==0){
         l_sending_duration=l_message_length/1000000;
-    }else{                                                      //(strcmp(par("transceiver_type"),("RFD22301"))==0){
+    }else if(strcmp(par("transceiver_type"),("RFD22301"))==0){
         l_sending_duration=l_message_length/250000;
+    }else{
+        l_sending_duration=l_message_length/(transceiver_datarate*1000);
     }
 
     return l_sending_duration;
@@ -129,6 +132,14 @@ void transceiver::power_level(std::string activity){
             power_consumption=12000;
         }else{      // Sleeping
             power_consumption=4;
+        }
+    }else{
+        if (activity=="send"){
+            power_consumption=par("transceiver_energy_sending");
+        }else if(activity=="receive"){
+            power_consumption=par("transceiver_energy_receiving");
+        }else{      // Sleeping
+            power_consumption=par("transceiver_energy_sleeping");
         }
     }
     char short_activity='e';  //e for error; We need a char, because strings are not allowed in messages.

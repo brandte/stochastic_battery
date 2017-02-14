@@ -5,8 +5,6 @@
 #include "power_update_m.h"
 using namespace omnetpp;
 
-
-
 class battery : public cSimpleModule{
     public:
         cMessage *imdead;
@@ -21,6 +19,10 @@ class battery : public cSimpleModule{
         simtime_t last_time;
         char last_activity;
         bool dead;
+
+        double q_0;
+        double g_n;    //Overall decay coefficient
+        double g_c;     //How much usage can maximal be recovered.
     protected:
         virtual void initialize();
         virtual void handleMessage(cMessage *msg);
@@ -32,6 +34,10 @@ void battery::initialize()
 {
     //EV <<"getScaleExp: " << omnetpp::SimTime::getScaleExp();  //Just for debug.
 
+    q_0=par("q_0");
+    g_n=par("g_N");    //Overall decay coefficient
+    g_c=par("g_C");    //How much usage can maximal be recovered.
+
     stat_capacity.setName("Battery capacity");
     stat_power_level.setName("Power Level");
     stat_recovery.setName("How much is recovered");
@@ -39,8 +45,9 @@ void battery::initialize()
     last_activity='z';
     dead=0;
 
-    float_capacity=108;                    //As aus Datenblatt 620mAh(alt) jetzt 30mAh
-    conversion=float_capacity/1e10;                   //Normierung auf SEU.
+    double N=par("N");
+    float_capacity=par("battery_capacity");                    //As aus Datenblatt 620mAh(alt) jetzt 30mAh
+    conversion=float_capacity/N;                   //Normierung auf SEU.
     int_capacity=round(float_capacity/conversion);
     stat_capacity.record(float_capacity);
     last_time=simTime();
@@ -64,9 +71,6 @@ void battery::handleMessage(cMessage *msg){
             EV << getParentModule()->getName() << " is empty.";
         }else{  //Recovery
             if(last_activity!='z'){
-                float q_0=0.95;
-                float g_n=1e-10;    //Overall decay coefficient
-                float g_c=1e-8;     //How much usage can maximal be recovered.
                 float p=0;      //Initialization
                 int64_t int_old_capacity =int_capacity;
 

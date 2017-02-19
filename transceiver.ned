@@ -1,10 +1,10 @@
 package stochastic_battery;
 
 simple transceiver{
-    parameters:	//description Text
+    parameters:			//inherited from the omnetpp.ini
         int message_length = default(500);
         int sending_interval=default(30);
-        string transceiver_type=default("CC2530");
+        string transceiver_type=default("none");
         int transceiver_energy_sending=default(33500);
         int transceiver_energy_receiving=default(24300);
         int transceiver_energy_sleeping=default(200);

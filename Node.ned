@@ -1,5 +1,7 @@
 package stochastic_battery;
 
+//Compound module that combines the transceiver and the battery to a node.
+
 module Node
 {
     gates:

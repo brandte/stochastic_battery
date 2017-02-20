@@ -11,9 +11,9 @@ class battery : public cSimpleModule{
         cMessage *imdead;           //This message tells the transceiver when the battery is empty
     private:
         //The cOutVectors are for data collection
-        cOutVector stat_capacity;   //How much capacity is in the battery
-        cOutVector stat_recovery;   //How much energy is recovered in this step
-        //cOutVector stat_power_level;
+        cOutVector stat_capacity;   //How much capacity is in the battery? In [As]
+        cOutVector stat_recovery;   //How much energy is recovered in this step? In [As]
+        cOutVector stat_consumption;//How much energy did the transceiver consume in this step? In [As]
 
         double power_level;          //How much power is drained by the transceiver
         long double float_capacity;  //The capacity as a floating point in [As]. It needs to be very big and very precise. Will mainly be used for input, as well as analysis output.
@@ -22,6 +22,8 @@ class battery : public cSimpleModule{
         simtime_t last_time;         //This variable will store the time, when the power consumption was changed last time.
         char last_activity;          //This variable will store the activity that was performed by the transceiver at the last power level change.
         bool dead;                   //When the battery is empty we change this boolean and send the information to the transceiver.
+        int64_t usage;               //How much energy was consumed in the last time interval?
+        double float_usage;          //For the export a conversation to [As] is usefull.
 
         double q_0;     //Important variable for the stochastic formula. See the documentation for details. Inherited from omnetpp.ini
         double g_n;     //Important variable for the stochastic formula. See the documentation for details. Inherited from omnetpp.ini
@@ -39,13 +41,13 @@ void battery::initialize()
     g_n=par("g_N");    //Inheritance from the omnetpp.ini
     g_c=par("g_C");    //Inheritance from the omnetpp.ini
 
-    stat_capacity.setName("Battery capacity");      //For analysis
-    //stat_power_level.setName("Power Level");      //For analysis
-    stat_recovery.setName("How much is recovered"); //For analysis
+    stat_capacity.setName("Battery capacity");                    //For analysis
+    stat_consumption.setName("Consumption of the transceiver");   //For analysis
+    stat_recovery.setName("How much is recovered");               //For analysis
 
     power_level=0;
     last_activity='z';
-    dead=0;
+    dead=0;                 //We start alive
 
     double N=par("N");
     float_capacity=par("battery_capacity");        //From onetpp.ini
@@ -60,8 +62,10 @@ void battery::handleMessage(cMessage *msg){
 
         //calculation of the power consumption in the previous time interval.
         simtime_t delta_t=(simTime()-last_time);
-        int64_t usage=round(power_level/conversion*delta_t.dbl());  //how much energy was consumed
-        int_capacity-=usage;                                        //update capacity
+        usage=round(power_level/conversion*delta_t.dbl());  //how much energy was consumed
+        int_capacity-=usage;                                //update capacity
+        float_usage=usage*conversion;                   //For external usage
+        stat_consumption.record(float_usage);           //Saved in [As]
         float_capacity=int_capacity*conversion;         //For external analysis
         stat_capacity.record(float_capacity);           //The graph looks better when we include some redundancy.
 
@@ -86,16 +90,14 @@ void battery::handleMessage(cMessage *msg){
                 }
                 float_capacity=int_capacity*conversion;     //For external analysis.
                 stat_capacity.record(float_capacity);
-                stat_recovery.record(int_capacity-int_old_capacity);
+                stat_recovery.record((int_capacity-int_old_capacity)*conversion);
             }
 
             //read and store the incoming values, so we can use them in the next turn.
-            //stat_power_level.record(power_level);                               //The graph looks better when we include some redundancy.
             power_update *Power_pointer=check_and_cast<power_update *>(msg);    //call the message
             power_level = Power_pointer->getPower_consum();                     //read the submitted power level. In [Microampere]
             power_level=power_level/1000000;                                    //Convert to [Ampere]
             last_activity = Power_pointer->getCurrent_activity();               //Store the activity
-            //stat_power_level.record(power_level);
             last_time=simTime();                                                //We need this to calculate the delta later.
         }
     }

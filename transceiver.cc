@@ -16,8 +16,8 @@ class transceiver : public cSimpleModule{
     cMessage *sending_time_SM;          //How long does the sending take? This SM will regulate.
     cMessage *wakeup_SM;                //The SM that will wake up the receiver.
     double sending_duration;            //How long will the sending take?  Based on data rate and message length.
-    double receiver_offtime=par("receiver_offtime");        //The receiver has a receiving window. With this value we simulate that.
-    int transceiver_datarate=par("transceiver_datarate");   //Data rate. Inherited from omnetpp.ini
+    double receiver_offtime;            //The receiver has a receiving window. With this value we simulate that.
+    int transceiver_datarate;           //Data rate. Inherited from omnetpp.ini
 
   protected:
     virtual void initialize() override;
@@ -36,10 +36,12 @@ void transceiver::initialize(){
 
     if (l_sending_interval!=0){         //When this is zero we do nothing.
         if (strcmp("Sender", getParentModule()->getName()) == 0){
+            transceiver_datarate=par("transceiver_datarate");
             sending_time_SM = new cMessage("sending time SM");              //We initialize the SM
             measuring_interval_SM = new cMessage("measuring interval");     //same here.
             scheduleAt(par("sending_interval"),measuring_interval_SM);      //The sender interval is started. When this SM will arrive the first message will be send.
         }else{  //receiver
+            receiver_offtime=par("receiver_offtime");
             wakeup_SM=new cMessage("wake up SM for Receiver");              //SM is initialized
             scheduleAt(receiver_offtime*l_sending_interval,wakeup_SM);      //and send. The receiver will be active for a while, before it receives the message from the sender.
         }

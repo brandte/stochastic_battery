@@ -16,7 +16,7 @@
 
 
 /**
- * Class generated from <tt>power_update.msg:1</tt> by nedtool.
+ * Class generated from <tt>power_update.msg:3</tt> by nedtool.
  * <pre>
  * message power_update
  * {

@@ -87,8 +87,8 @@ void transceiver::handleMessage(cMessage *msg){
 double transceiver::sending_duration_func(){
     //This function calculates how long the sender will be sending depending on the given parameters from the omnetpp.ini
     double l_sending_duration;
-    double l_message_length=par("message_length");
-    l_message_length=ceil(l_message_length/64)*64;
+    double l_message_length=par("message_length");   //in Bit
+    l_message_length=ceil(l_message_length/64)*8;   //in Byte
 
     if (strcmp(par("transceiver_type"),("CC2530"))==0){
         l_sending_duration=l_message_length/250000;             //Assuming BPSK

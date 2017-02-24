@@ -7,7 +7,7 @@ The preset values within the simulation are set for energy efficient radio-based
 Be aware, that the original model was not intended for such a scenario, what leads to long simulation durations (up to hours)!
 ###Parameters
 There are examples given for transceiver parameters, as well as the possibility to set own values in the omnetpp.ini. In addition you can set the size of the Battery. We recommend not to stretch them too far, because this might break the limits of the model.  
-To extend it, you have to adjust the core parameters of the stochastic model. We highly recommend to look at the more comprehensive documentation in the [name.pdf comming soon]. It was originally the report for the stated university curse, but also serves as an additional description of the project.
+To extend it, you have to adjust the core parameters of the stochastic model. We highly recommend to look at the more comprehensive documentation in the stochstic_battery_documentation. It was originally the report for the stated university curse, but also serves as an additional description of the project.
 
 Best success with your own project, might our work help you.  
 *Eike Brandt  
